@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,8 @@ namespace Master_System.Hardware
 {
 	public class Z80
 	{
+		//NOTE: Z80 is Little Endian -> Low bytes come before High bytes, in memory
+
 		byte opcode;
 
 		ushort PC;
@@ -82,20 +85,34 @@ namespace Master_System.Hardware
 
 		#endregion
 
-		public Z80(int ramSize = 8192)
+		public Z80(int ramSize = 81920)
 		{
 			ram = new byte[ramSize];
+		}
+
+		public void LoadApplication(string path)
+		{
+			//Appstartint
+			var app = File.ReadAllBytes(path);
+			
+			for (var i = 0; i < app.Length; ++ i)
+			{
+				ram[i] = app[i];
+			}
 		}
 
 		public void Cycle()
 		{
 			Fetch();
 			DecodeAndExecute();
+			R += 1;
 		}
 
 		public void Fetch()
 		{
 			opcode = ram[PC];
+			Console.WriteLine(opcode.ToString("X2"));
+			Console.ReadKey();
 		}
 
 		public void DecodeAndExecute()
@@ -273,6 +290,128 @@ namespace Master_System.Hardware
 					F = (byte)((F & ~1) | rrca);
 					PC += 1;
 					break;
+
+				case 0x20: //If Z flag is 0, nn is added to PC
+					if ((F & 0x40) == 0)
+						PC += ram[PC + 1];
+					else
+						PC += 2;
+					break;
+
+				case 0x21: //Load nn nn into HL
+					L = ram[PC + 1];
+					H = ram[PC + 2];
+					PC += 3;
+					break;
+
+				case 0x22: //Store HL in [nn nn]
+					ram[ram[PC + 1]] = L;
+					ram[ram[PC + 2]] = H;
+					PC += 3;
+					break;
+
+				case 0x23: //Add 1 to HL
+					SetHL((ushort)(DualRegister(H, L) + 1));
+					PC += 1;
+					break;
+
+				case 0x24: //Add 1 to H
+					H += 1;
+					PC += 1;
+					break;
+
+				case 0x25: //Sub 1 from H
+					H -= 1;
+					PC += 1;
+					break;
+
+				case 0x26: //Load nn into H
+					H = ram[PC + 1];
+					PC += 2;
+					break;
+
+				case 0x27: //DAA - Adjust for BCD operations - from MSX forums http://www.msx.org/forum/semi-msx-talk/emulation/z80-daa
+					var r = A;
+					var flagH = F & 0x10;
+					var flagC = F & 0x01;
+
+					if ((F & 0x02) != 0)
+					{
+						if ((flagH != 0) || ((A & 0x0F) > 9))
+						{
+							r -= 6;
+						}
+						if ((flagC != 0) || ((A > 0x99)) {
+							r -= 0x60;
+						}
+					} else
+					{
+						if ((flagH != 0) || ((A & 0x0F) > 9))
+						{
+							r += 6;
+						}
+						if ((flagC != 0) || ((A > 0x99)) {
+							r += 0x60;
+						}
+					}
+
+					F = (byte)((F & 3) | Tables.DAA_TABLE[r] | ((A > 0x99) ? 1 : 0) | ((A ^ r) & 0x10));
+					A = r;
+					PC += 1;
+					break;
+
+				case 0x28: //If Z is 0, nn is added to PC
+					if ((F & 0x40) == 1)
+						PC += ram[PC + 1];
+					else
+						PC += 2;
+					break;
+
+				case 0x29: //Add HL to HL
+					SetHL((ushort)(DualRegister(H, L) + DualRegister(H, L)));
+					PC += 1;
+					break;
+
+				case 0x2A: //Load [nn nn] into HL
+					H = ram[ram[PC + 2]];
+					L = ram[ram[PC + 1]];
+					PC += 3;
+					break;
+
+				case 0x2B: //Sub 1 from HL
+					SetHL((ushort)(DualRegister(H, L) - 1));
+					PC += 1;
+					break;
+
+				case 0x2C: //Add 1 to L
+					L += 1;
+					PC += 1;
+					break;
+
+				case 0x2D: //Sub 1 from L
+					L -= 1;
+					PC += 1;
+					break;
+
+				case 0x2E: //Load nn into L
+					L = ram[PC + 1];
+					PC += 2;
+					break;
+
+				case 0x2F: //Invert A
+					A = (byte) ~A;
+					PC += 1;
+					break;
+			}
+		}
+
+		public void IncR()
+		{
+			R += 1;
+			
+			if ((R & 0x7F) == 127)
+			{
+				R = (byte)(R & ~0x7F); //Clear lower 6 bits (zero indexed)
 			}
 		}
     }

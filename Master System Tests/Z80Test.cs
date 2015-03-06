@@ -105,5 +105,14 @@ namespace Master_System_Tests
 			Assert.AreEqual(0x45, z80.H1);
 			Assert.AreEqual(0xF8, z80.L1);
 		}
+
+		[TestMethod]
+		public void TestExecute()
+		{
+			Action a = () => { z80.A = 0x0F; };
+			z80.Execute(a);
+
+			Assert.AreEqual(0x0F, z80.A);
+		}
 	}
 }

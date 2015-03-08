@@ -402,6 +402,90 @@ namespace Master_System.Hardware
 					A = (byte) ~A;
 					PC += 1;
 					break;
+
+				case 0x30: //If C flag is 0, nn is added to PC
+					if ((F & 0x01) == 0)
+						PC += ram[PC + 1];
+					else
+						PC += 2;
+					break;
+
+				case 0x31: //Load nn nn into SP
+					SP = DualRegister(ram[PC + 2], ram[PC + 2]);
+					PC += 3;
+					break;
+
+				case 0x32: //Store A in [nn nn]
+					ram[DualRegister(ram[PC + 2], ram[PC + 1])] = A;
+					PC += 3;
+					break;
+
+				case 0x33: //Add 1 to SP
+					SP += 1;
+					PC += 1;
+					break;
+
+				case 0x34: //Add 1 to [HL]
+					ram[DualRegister(H, L)] += 1;
+					PC += 1;
+					break;
+
+				case 0x35: //Sub 1 from [HL]
+					ram[DualRegister(H, L)] -= 1;
+					PC += 1;
+					break;
+
+				case 0x36: //Load nn into [HL]
+					ram[DualRegister(H, L)] = ram[PC + 1];
+					PC += 2;
+					break;
+
+				case 0x37: //Set Carry Flag
+					F |= 0x01;
+					PC += 1;
+					break;
+
+				case 0x38://If Carry Flag is 1, add nn to PC
+					if ((F & 0x01) == 1)
+						PC += ram[PC + 1];
+					else
+						PC += 2;
+					break;
+
+				case 0x39: //Add SP to HL. NOTE: Possibly Add HL to HL. opcode list used, lists this in its description, but I believe it to be incorrect
+					SetHL((ushort)(DualRegister(H, L) + SP));
+					PC += 1;
+					break;
+
+				case 0x3A: //Load [nn nn] into A
+					A = ram[DualRegister(ram[PC + 2], ram[PC + 1])];
+					PC += 3;
+					break;
+
+				case 0x3B: //Sub 1 from SP
+					SP -= 1;
+					PC += 1;
+					break;
+
+				case 0x3C: //Add 1 to A
+					A += 1;
+					PC += 1;
+					break;
+
+				case 0x3D: //Sub 1 from A
+					A -= 1;
+					PC += 1;
+					break;
+
+				case 0x3E: //Load nn into A
+					A = ram[PC + 1];
+					PC += 2;
+					break;
+
+				case 0x3F: //Invert Carry Flag
+					F = (byte)(F ^ 0x01);
+					PC += 1;
+					break;
 			}
 		}
 

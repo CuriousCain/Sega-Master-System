@@ -341,7 +341,7 @@ namespace Master_System.Hardware
 						{
 							r -= 6;
 						}
-						if ((flagC != 0) || ((A > 0x99)) {
+						if ((flagC != 0) || ((A > 0x99))) {
 							r -= 0x60;
 						}
 					} else
@@ -350,7 +350,7 @@ namespace Master_System.Hardware
 						{
 							r += 6;
 						}
-						if ((flagC != 0) || ((A > 0x99)) {
+						if ((flagC != 0) || ((A > 0x99))) {
 							r += 0x60;
 						}
 					}
@@ -564,6 +564,166 @@ namespace Master_System.Hardware
 
 				case 0x4F: //Load A into C
 					C = A;
+					PC += 1;
+					break;
+
+				case 0x50: //Load B into D
+					D = B;
+					PC += 1;
+					break;
+
+				case 0x51: //Load C into D
+					D = C;
+					PC += 1;
+					break;
+
+				case 0x52: //Load D into D
+					Console.WriteLine("Load D into D");
+					PC += 1;
+					break;
+
+				case 0x53: //Load E into D
+					D = E;
+					PC += 1;
+					break;
+
+				case 0x54: //Load H into D
+					D = H;
+					PC += 1;
+					break;
+
+				case 0x55: //Load L into D
+					D = L;
+					PC += 1;
+					break;
+
+				case 0x56: //Load [HL] into D
+					D = ram[DualRegister(H, L)];
+					PC += 1;
+					break;
+
+				case 0x57: //Load A into D
+					D = A;
+					PC += 1;
+					break;
+
+				case 0x58: //Load B into E
+					E = B;
+					PC += 1;
+					break;
+
+				case 0x59: //Load C into E
+					E = C;
+					PC += 1;
+					break;
+
+				case 0x5A: //Load D into E
+					E = D;
+					PC += 1;
+					break;
+
+				case 0x5B: //Load E into E
+					Console.WriteLine("Load E into E");
+					PC += 1;
+					break;
+
+				case 0x5C: //Load H into E
+					E = H;
+					PC += 1;
+					break;
+
+				case 0x5D: //Load L into E
+					E = L;
+					PC += 1;
+					break;
+
+				case 0x5E: //Load [HL] into E
+					E = ram[DualRegister(H, L)];
+					PC += 1;
+					break;
+
+				case 0x5F: //Load A into E
+					E = A;
+					PC += 1;
+					break;
+
+				case 0x60: //Load B into H
+					H = B;
+					PC += 1;
+					break;
+
+				case 0x61: //Load C into H
+					H = C;
+					PC += 1;
+					break;
+
+				case 0x62: //Load D into H
+					H = D;
+					PC += 1;
+					break;
+
+				case 0x63: //Load E into H
+					H = E;
+					PC += 1;
+					break;
+
+				case 0x64: //Load H into H
+					Console.WriteLine("Load H into H");
+					PC += 1;
+					break;
+
+				case 0x65: //Load L into H
+					H = L;
+					PC += 1;
+					break;
+
+				case 0x66: //Load [HL] into H
+					H = ram[DualRegister(H, L)];
+					PC += 1;
+					break;
+
+				case 0x67: //Load A into H
+					H = A;
+					PC += 1;
+					break;
+
+				case 0x68: //Load B into L
+					L = B;
+					PC += 1;
+					break;
+
+				case 0x69: //Load C into L
+					L = C;
+					PC += 1;
+					break;
+
+				case 0x6A: //Load D into L
+					L = D;
+					PC += 1;
+					break;
+
+				case 0x6B: //Load E into L
+					L = E;
+					PC += 1;
+					break;
+
+				case 0x6C: //Load H into L
+					L = H;
+					PC += 1;
+					break;
+
+				case 0x6D: //Load L into L
+					Console.WriteLine("Load L into L");
+					PC += 1;
+					break;
+
+				case 0x6E: //Load [HL] into L
+					L = ram[DualRegister(H, L)];
+					PC += 1;
+					break;
+
+				case 0x6F: //Load A into L
+					L = A;
 					PC += 1;
 					break;
 

@@ -486,7 +486,88 @@ namespace Master_System.Hardware
 					F = (byte)(F ^ 0x01);
 					PC += 1;
 					break;
-			}
+
+				case 0x40: //Load B into B
+					Console.WriteLine("Load B into B");
+					PC += 1;
+					break;
+
+				case 0x41: //Load C into B
+					B = C;
+					PC += 1;
+					break;
+
+				case 0x42: //Load D into B
+					B = D;
+					PC += 1;
+					break;
+
+				case 0x43: //Load E into B
+					B = E;
+					PC += 1;
+					break;
+
+				case 0x44: //Load H into B
+					B = H;
+					PC += 1;
+					break;
+
+				case 0x45: //Load L into B
+					B = L;
+					PC += 1;
+					break;
+
+				case 0x46: //Load [HL] into B
+					B = ram[DualRegister(H, L)];
+					PC += 1;
+					break;
+
+				case 0x47: //Load A into B
+					B = A;
+					PC += 1;
+					break;
+
+				case 0x48: //Load B into C
+					C = B;
+					PC += 1;
+					break;
+
+				case 0x49: //Load C into C
+					Console.WriteLine("Load C into C");
+					PC += 1;
+					break;
+
+				case 0x4A: //Load D into C
+					C = D;
+					PC += 1;
+					break;
+
+				case 0x4B: //Load E into C
+					C = E;
+					PC += 1;
+					break;
+
+				case 0x4C: //Load H into C
+					C = H;
+					PC += 1;
+					break;
+
+				case 0x4D: //Load L into C
+					C = L;
+					PC += 1;
+					break;
+
+				case 0x4E: //Load [HL] into C
+					C = ram[DualRegister(H, L)];
+					PC += 1;
+					break;
+
+				case 0x4F: //Load A into C
+					C = A;
+					PC += 1;
+					break;
+
+            }
 		}
 
 		public void IncR()

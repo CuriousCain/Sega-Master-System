@@ -105,7 +105,7 @@ namespace Master_System.Hardware
 		{
 			Fetch();
 			DecodeAndExecute();
-			R += 1;
+			IncR();
 		}
 
 		public void Fetch()
@@ -724,6 +724,169 @@ namespace Master_System.Hardware
 
 				case 0x6F: //Load A into L
 					L = A;
+					PC += 1;
+					break;
+
+				case 0x70: //Load B into [HL]
+					ram[DualRegister(H, L)] = B;
+					PC += 1;
+					break;
+
+				case 0x71: //Load C into [HL]
+					ram[DualRegister(H, L)] = C;
+					PC += 1;
+					break;
+
+				case 0x72: //Load D into [HL]
+					ram[DualRegister(H, L)] = D;
+					PC += 1;
+					break;
+
+				case 0x73: //Load E into [HL]
+					ram[DualRegister(H, L)] = E;
+					PC += 1;
+					break;
+
+				case 0x74: //Load H into [HL]
+					ram[DualRegister(H, L)] = H;
+					PC += 1;
+					break;
+
+				case 0x75: //Load L into [HL]
+					ram[DualRegister(H, L)] = L;
+					PC += 1;
+					break;
+
+				case 0x76: //Halt until interrupt or reset. NOTE: SMS doesn't use this, replace if using Z80 in another emulator
+					while(I == 0)
+					{
+						Console.WriteLine("HALT: NOP");
+					}
+					PC += 1;
+					break;
+
+				case 0x77: //Load A into [HL]
+					ram[DualRegister(H, L)] = A;
+					PC += 1;
+					break;
+
+				case 0x78: //Load B into A
+					A = B;
+					PC += 1;
+					break;
+
+				case 0x79: //Load C into A
+					A = C;
+					PC += 1;
+					break;
+
+				case 0x7A: //Load D into A
+					A = D;
+					PC += 1;
+					break;
+
+				case 0x7B: //Load E into A
+					A = E;
+					PC += 1;
+					break;
+
+				case 0x7C: //Load H into A
+					A = H;
+					PC += 1;
+					break;
+
+				case 0x7D: //Load L into A
+					A = L;
+					PC += 1;
+					break;
+
+				case 0x7E: //Load [HL] into A
+					A = ram[DualRegister(H, L)];
+					PC += 1;
+					break;
+
+				case 0x7F: //Load A into A
+					Console.WriteLine("Load A into A");
+					PC += 1;
+					break;
+
+				case 0x80: //Add B to A
+					A += B;
+					PC += 1;
+					break;
+
+				case 0x81: //Add C to A
+					A += C;
+					PC += 1;
+					break;
+
+				case 0x82: //Add D to A
+					A += D;
+					PC += 1;
+					break;
+
+				case 0x83: //Add E to A
+					A += E;
+					PC += 1;
+					break;
+
+				case 0x84: //Add H to A
+					A += H;
+					PC += 1;
+					break;
+
+				case 0x85: //Add L to A
+					A += L;
+					PC += 1;
+					break;
+
+				case 0x86: //Add [HL] to A
+					A += ram[DualRegister(H, L)];
+					PC += 1;
+					break;
+
+				case 0x87: //Add A to A
+					A += A;
+					PC += 1;
+					break;
+
+				case 0x88: //Add Carry Flag and B to A
+					A += (byte)(B + (F & 0x01));
+					PC += 1;
+					break;
+
+				case 0x89: //Add Carry Flag and C to A
+					A += (byte)(C + (F & 0x01));
+					PC += 1;
+					break;
+
+				case 0x8A: //Add Carry Flag and D to A
+					A += (byte)(D + (F & 0x01));
+					PC += 1;
+					break;
+
+				case 0x8B: //Add Carry Flag and E to A
+					A += (byte)(E + (F & 0x01));
+					PC += 1;
+					break;
+
+				case 0x8C: //Add Carry Flag and H to A
+					A += (byte)(H + (F & 0x01));
+					PC += 1;
+					break;
+
+				case 0x8D: //Add Carry Flag and L to A
+					A += (byte)(L + (F & 0x01));
+					PC += 1;
+					break;
+
+				case 0x8E: //Add Carry Flag and [HL] to A
+					A += (byte)(DualRegister(H, L) + (F & 0x01));
+					PC += 1;
+					break;
+
+				case 0x8F: //Add Carry Flag and A to A
+					A += (byte)(A + (F & 0x01));
 					PC += 1;
 					break;
 

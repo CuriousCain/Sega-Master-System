@@ -28,8 +28,15 @@ namespace Master_System.Hardware
 
 		byte[] ram;
 
+		byte CFlag { get { return (byte)(F & 0x01); } }
+		byte NFlag { get { return (byte)(F & 0x02); } }
+		byte HFlag { get { return (byte)(F & 0x10); } }
+		byte ZFlag { get { return (byte)(F & 0x40); } }
+		byte SFlag { get { return (byte)(F & 0x80); } }
+		byte PVFlag { get { return (byte)(F & 0x04); } }
+
 		#region RegisterGetSet
-		
+
 		public ushort DualRegister(byte upperRegister, byte lowerRegister)
 		{
 			return (ushort)((upperRegister << 8) | lowerRegister);
@@ -245,7 +252,7 @@ namespace Master_System.Hardware
 
 				case 0x17: //Rotate A left 1 bit. Bit 7 is copied to Carry Flag and previous Carry Flag is copied to bit 0
 					var tmp = A >> 7;
-					A = (byte)((A << 1) | (F & 0x01));
+					A = (byte)((A << 1) | CFlag);
 					F = (byte)((F & ~1) | tmp);
 					PC += 1;
 					break;
@@ -286,13 +293,13 @@ namespace Master_System.Hardware
 
 				case 0x1F: //Rotate A right 1 bit. Bit 0 is copied to Carry Flag and previous Carry Flag is copied to bit 7
 					var rrca = A << 7;
-					A = (byte)((A >> 1) | ((F & 0x01) << 7));
+					A = (byte)((A >> 1) | (CFlag << 7));
 					F = (byte)((F & ~1) | rrca);
 					PC += 1;
 					break;
 
 				case 0x20: //If Z flag is 0, nn is added to PC
-					if ((F & 0x40) == 0)
+					if (ZFlag == 0)
 						PC += ram[PC + 1];
 					else
 						PC += 2;
@@ -332,25 +339,23 @@ namespace Master_System.Hardware
 
 				case 0x27: //DAA - Adjust for BCD operations - from MSX forums http://www.msx.org/forum/semi-msx-talk/emulation/z80-daa
 					var r = A;
-					var flagH = F & 0x10;
-					var flagC = F & 0x01;
 
-					if ((F & 0x02) != 0)
+					if (NFlag != 0)
 					{
-						if ((flagH != 0) || ((A & 0x0F) > 9))
+						if ((HFlag != 0) || ((A & 0x0F) > 9))
 						{
 							r -= 6;
 						}
-						if ((flagC != 0) || ((A > 0x99))) {
+						if ((CFlag != 0) || ((A > 0x99))) {
 							r -= 0x60;
 						}
 					} else
 					{
-						if ((flagH != 0) || ((A & 0x0F) > 9))
+						if ((HFlag != 0) || ((A & 0x0F) > 9))
 						{
 							r += 6;
 						}
-						if ((flagC != 0) || ((A > 0x99))) {
+						if ((CFlag != 0) || ((A > 0x99))) {
 							r += 0x60;
 						}
 					}
@@ -360,8 +365,8 @@ namespace Master_System.Hardware
 					PC += 1;
 					break;
 
-				case 0x28: //If Z is 0, nn is added to PC
-					if ((F & 0x40) == 1)
+				case 0x28: //If Z is 1, nn is added to PC
+					if (ZFlag == 1)
 						PC += ram[PC + 1];
 					else
 						PC += 2;
@@ -404,7 +409,7 @@ namespace Master_System.Hardware
 					break;
 
 				case 0x30: //If C flag is 0, nn is added to PC
-					if ((F & 0x01) == 0)
+					if (CFlag == 0)
 						PC += ram[PC + 1];
 					else
 						PC += 2;
@@ -446,7 +451,7 @@ namespace Master_System.Hardware
 					break;
 
 				case 0x38://If Carry Flag is 1, add nn to PC
-					if ((F & 0x01) == 1)
+					if (CFlag == 1)
 						PC += ram[PC + 1];
 					else
 						PC += 2;
@@ -851,45 +856,124 @@ namespace Master_System.Hardware
 					break;
 
 				case 0x88: //Add Carry Flag and B to A
-					A += (byte)(B + (F & 0x01));
+					A += (byte)(B + CFlag);
 					PC += 1;
 					break;
 
 				case 0x89: //Add Carry Flag and C to A
-					A += (byte)(C + (F & 0x01));
+					A += (byte)(C + CFlag);
 					PC += 1;
 					break;
 
 				case 0x8A: //Add Carry Flag and D to A
-					A += (byte)(D + (F & 0x01));
+					A += (byte)(D + CFlag);
 					PC += 1;
 					break;
 
 				case 0x8B: //Add Carry Flag and E to A
-					A += (byte)(E + (F & 0x01));
+					A += (byte)(E + CFlag);
 					PC += 1;
 					break;
 
 				case 0x8C: //Add Carry Flag and H to A
-					A += (byte)(H + (F & 0x01));
+					A += (byte)(H + CFlag);
 					PC += 1;
 					break;
 
 				case 0x8D: //Add Carry Flag and L to A
-					A += (byte)(L + (F & 0x01));
+					A += (byte)(L + CFlag);
 					PC += 1;
 					break;
 
 				case 0x8E: //Add Carry Flag and [HL] to A
-					A += (byte)(DualRegister(H, L) + (F & 0x01));
+					A += (byte)(ram[DualRegister(H, L)] + CFlag);
 					PC += 1;
 					break;
 
 				case 0x8F: //Add Carry Flag and A to A
-					A += (byte)(A + (F & 0x01));
+					A += (byte)(A + CFlag);
 					PC += 1;
 					break;
 
+				case 0x90: //Sub B from A
+					A -= B;
+					PC += 1;
+					break;
+
+				case 0x91: //Sub C from A
+					A -= C;
+					PC += 1;
+					break;
+
+				case 0x92: //Sub D from A
+					A -= D;
+					PC += 1;
+					break;
+
+				case 0x93: //Sub E from A
+					A -= E;
+					PC += 1;
+					break;
+
+				case 0x94: //Sub H from A
+					A -= H;
+					PC += 1;
+					break;
+
+				case 0x95: //Sub L from A
+					A -= L;
+					PC += 1;
+					break;
+
+				case 0x96: //Sub [HL] from A
+					A -= ram[DualRegister(H, L)];
+					PC += 1;
+					break;
+
+				case 0x97: //Sub A from A
+					A -= A;
+					PC += 1;
+					break;
+
+				case 0x98: //Sub B and Carry Flag from A
+					A -= (byte)(B + CFlag);
+					PC += 1;
+					break;
+
+				case 0x99: //Sub C and Carry Flag from A
+					A -= (byte)(C + CFlag);
+					PC += 1;
+					break;
+
+				case 0x9A: //Sub D and Carry Flag from A
+					A -= (byte)(C + CFlag);
+					PC += 1;
+					break;
+
+				case 0x9B: //Sub E and Carry Flag from A
+					A -= (byte)(E + CFlag);
+					PC += 1;
+					break;
+
+				case 0x9C: //Sub H and Carry Flag from A
+					A -= (byte)(E + CFlag);
+					PC += 1;
+					break;
+
+				case 0x9D: //Sub L and Carry Flag from A
+					A -= (byte)(L + CFlag);
+					PC += 1;
+					break;
+
+				case 0x9E: //Sub [HL] and Carry Flag from A
+					A -= (byte)(ram[DualRegister(H, L)] + CFlag);
+					PC += 1;
+					break;
+
+				case 0x9F: //Sub A and Carry Flag from A
+					A -= (byte)(A + CFlag);
+					PC += 1;
+					break;
             }
 		}
 

@@ -764,9 +764,7 @@ namespace Master_System.Hardware
 
 				case 0x76: //Halt until interrupt or reset. NOTE: SMS doesn't use this, replace if using Z80 in another emulator
 					while(I == 0)
-					{
 						Console.WriteLine("HALT: NOP");
-					}
 					PC += 1;
 					break;
 
@@ -974,7 +972,65 @@ namespace Master_System.Hardware
 					A -= (byte)(A + CFlag);
 					PC += 1;
 					break;
+
+				case 0xA0: //AND A with B
+					A &= B;
+					AndFlags();
+					PC += 1;
+					break;
+
+				case 0xA1: //And A with C
+					A &= C;
+					AndFlags();
+					PC += 1;
+					break;
+
+				case 0xA2: //And A with D
+					A &= D;
+					AndFlags();
+					PC += 1;
+					break;
+
+				case 0xA3: //And A with E
+					A &= E;
+					AndFlags();
+					PC += 1;
+					break;
+
+				case 0xA4: //And A with H
+					A &= H;
+					AndFlags();
+					PC += 1;
+					break;
+
+				case 0xA5: //And A with L
+					A &= L;
+					AndFlags();
+					PC += 1;
+					break;
+
+				case 0xA6: //And A with [HL]
+					A &= ram[DualRegister(H, L)];
+					AndFlags();
+					PC += 1;
+					break;
+
+				case 0xA7: //And A with A
+					A &= A;
+					AndFlags();
+					PC += 1;
+					break;
+
+
             }
+		}
+
+		public void AndFlags()
+		{
+			F |= 0x10; //Set HFlag
+
+			F = (byte)(F & ~0x01); //Reset CFlag
+			F = (byte)(F & ~0x02); //Reset NFlag
 		}
 
 		public void IncR()

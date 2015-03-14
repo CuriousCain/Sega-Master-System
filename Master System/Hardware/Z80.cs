@@ -1021,7 +1021,53 @@ namespace Master_System.Hardware
 					PC += 1;
 					break;
 
+				case 0xA8: //Xor A with B
+					A ^= B;
+					XorFlags();
+					PC += 1;
+					break;
 
+				case 0xA9: //Xor A with C
+					A ^= C;
+					XorFlags();
+					PC += 1;
+					break;
+
+				case 0xAA: //Xor A with D
+					A ^= D;
+					XorFlags();
+					PC += 1;
+					break;
+
+				case 0xAB: //Xor A with E
+					A ^= E;
+					XorFlags();
+					PC += 1;
+					break;
+
+				case 0xAC: //Xor A with H
+					A ^= H;
+					XorFlags();
+					PC += 1;
+					break;
+
+				case 0xAD: //Xor A with L
+					A ^= L;
+					XorFlags();
+					PC += 1;
+					break;
+
+				case 0xAE: //Xor A with [HL]
+					A ^= ram[DualRegister(H, L)];
+					XorFlags();
+					PC += 1;
+					break;
+
+				case 0xAF: //Xor A with A
+					A ^= A;
+					XorFlags();
+					PC += 1;
+					break;
             }
 		}
 
@@ -1029,6 +1075,13 @@ namespace Master_System.Hardware
 		{
 			F |= 0x10; //Set HFlag
 
+			F = (byte)(F & ~0x01); //Reset CFlag
+			F = (byte)(F & ~0x02); //Reset NFlag
+		}
+
+		public void XorFlags()
+		{
+			F = (byte)(F & ~0x10); //Reset HFlag
 			F = (byte)(F & ~0x01); //Reset CFlag
 			F = (byte)(F & ~0x02); //Reset NFlag
 		}
